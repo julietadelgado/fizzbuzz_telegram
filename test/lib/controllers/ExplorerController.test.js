@@ -36,6 +36,6 @@ describe("Test for ExplorerController", () => {
         const responseBot_string = ExplorerController.getTelegramResponse("string");
         expect(responseBot_string).toBe("Envía un número o misión válido");
         const responseBot_node = ExplorerController.getTelegramResponse("node");
-        expect(responseBot_node).toContain('Los explorers en java');
+        expect(responseBot_node).toContain('Los explorers en node');
     });
 });
