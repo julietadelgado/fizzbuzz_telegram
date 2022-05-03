@@ -1,0 +1,35 @@
+{
+  "name": "fizzbuzz",
+  "version": "1.0.0",
+  "description": "This is a repository where I am practicing refactoring a legacy code",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./node_modules/jest/bin/jest.js",
+    "linter": "node ./node_modules/eslint/bin/eslint.js .",
+    "linter-fix": "node ./node_modules/eslint/bin/eslint.js . --fix",
+    "server": "node ./lib/server.js"
+  },
+  "keywords": [],
+  "author": "Julieta Delgado",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.14.0",
+    "jest": "^26.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "npm": "^8.7.0"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/julietadelgado/fizzbuzz_new_feature.git"
+  },
+  "bugs": {
+    "url": "https://github.com/julietadelgado/fizzbuzz_new_feature/issues"
+  },
+  "homepage": "https://github.com/julietadelgado/fizzbuzz_new_feature#readme"
+}
