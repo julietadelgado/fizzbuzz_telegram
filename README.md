@@ -62,7 +62,6 @@ bot.on("message", (msg) => {
     const message = msg.text;
     const responseBot = ExplorerController.getTelegramResponse(message);
     bot.sendMessage(chatId, responseBot);
-
 });
 ```
 
@@ -72,52 +71,52 @@ bot.on("message", (msg) => {
 
 ```javascript
 static getTelegramResponse(message){
-        let responseBot = "hola";
+	let responseBot = "hola";
+	
+	if(!isNaN(parseInt(message))){
+	    const numberToApplyFb = parseInt(message);
+	    const fizzbuzzTrick = ExplorerController.applyFizzbuzz(numberToApplyFb);
+	    responseBot = `FizzBuzz \n\nTu número es: ${numberToApplyFb}. Validación: ${fizzbuzzTrick}`;
+	}
+	else {
+		const explorersByMission = ExplorerController.giveStringFormatExplorersByMission(ExplorerController.getExplorersByMission((message.toLowerCase())));
+		if (explorersByMission != "")
+			responseBot = "Validación por misión \n\nLos explorers en "+ message + " son: \n\n" + explorersByMission;
+		else
+			responseBot = "Envía un número o misión válido";
+	}
         
-        if(!isNaN(parseInt(message))){
-            const numberToApplyFb = parseInt(message);
-            const fizzbuzzTrick = ExplorerController.applyFizzbuzz(numberToApplyFb);
-            responseBot = `FizzBuzz \n\nTu número es: ${numberToApplyFb}. Validación: ${fizzbuzzTrick}`;
-        }
-        else {
-            const explorersByMission = ExplorerController.giveStringFormatExplorersByMission(ExplorerController.getExplorersByMission((message.toLowerCase())));
-            if (explorersByMission != "")
-                responseBot = "Validación por misión \n\nLos explorers en "+ message + " son: \n\n" + explorersByMission;
-            else
-                responseBot = "Envía un número o misión válido";
-        }
         
-        
-        return responseBot;
-    }
+	return responseBot;
+}
 ```
 
 `giveStringFormatExplorersByMission` will give string format at the response of the explorers by mission, for that we create the next function.
 ```javascript
-	static giveStringFormatExplorersByMission(students){
-        let string = "";
+static giveStringFormatExplorersByMission(students){
+	let string = "";
 
-        students.forEach(student => string +=    "Name: "+ student.name + "\n");
-        return string;
-   	}
+	students.forEach(student => string +=    "Name: "+ student.name + "\n");
+	return string;
+}
 ```
 
 12. Before call the bot, we can add a test to validate our functions
 ```javascript
-	test("5. Get Bot Response Fizzbuzz", () => {
-        const responseBot1 = ExplorerController.getTelegramResponse(1);
-        expect(responseBot1).toBe("FizzBuzz \n\nTu número es: 1. Validación: 1"); 
-        const responseBot3 = ExplorerController.getTelegramResponse(3);
-        expect(responseBot3).toBe("FizzBuzz \n\nTu número es: 3. Validación: FIZZ");
-        const responseBot5 = ExplorerController.getTelegramResponse(5);
-        expect(responseBot5).toBe("FizzBuzz \n\nTu número es: 5. Validación: BUZZ");
-        const responseBot15 = ExplorerController.getTelegramResponse(15);
-        expect(responseBot15).toBe("FizzBuzz \n\nTu número es: 15. Validación: FIZZBUZZ");
-        const responseBot_string = ExplorerController.getTelegramResponse("string");
-        expect(responseBot_string).toBe("Envía un número o misión válido");
-        const responseBot_node = ExplorerController.getTelegramResponse("node");
-        expect(responseBot_node).toContain("Los explorers en node");
-    });
+test("5. Get Bot Response Fizzbuzz", () => {
+	const responseBot1 = ExplorerController.getTelegramResponse(1);
+	expect(responseBot1).toBe("FizzBuzz \n\nTu número es: 1. Validación: 1"); 
+	const responseBot3 = ExplorerController.getTelegramResponse(3);
+	expect(responseBot3).toBe("FizzBuzz \n\nTu número es: 3. Validación: FIZZ");
+	const responseBot5 = ExplorerController.getTelegramResponse(5);
+	expect(responseBot5).toBe("FizzBuzz \n\nTu número es: 5. Validación: BUZZ");
+	const responseBot15 = ExplorerController.getTelegramResponse(15);
+	expect(responseBot15).toBe("FizzBuzz \n\nTu número es: 15. Validación: FIZZBUZZ");
+	const responseBot_string = ExplorerController.getTelegramResponse("string");
+	expect(responseBot_string).toBe("Envía un número o misión válido");
+	const responseBot_node = ExplorerController.getTelegramResponse("node");
+	expect(responseBot_node).toContain("Los explorers en node");
+});
 ```
 
 13. If the test is correct, then we just need to run our bot (node lib/bot.js) and send message in Telegram and see the result
