@@ -119,4 +119,6 @@ test("5. Get Bot Response Fizzbuzz", () => {
 });
 ```
 
-13. If the test is correct, then we just need to run our bot (node lib/bot.js) and send message in Telegram and see the result
+13. If the test is correct, then we just need to run our bot (node lib/bot.js) and send message in Telegram and see the result.
+![image](https://user-images.githubusercontent.com/48570016/167274438-cfc1f57b-5c33-4d52-8d4f-31652c021429.png)
+![image](https://user-images.githubusercontent.com/48570016/167274448-a7d22649-dc81-4d11-8092-00f21554a26d.png)
