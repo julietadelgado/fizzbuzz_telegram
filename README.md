@@ -1,62 +1,123 @@
 # Practice Launch X
 
-### New feature
+### New feature Bot Telegram
 
-This is a repository where we are going to add a new functionality to our refactoring code.
+In this repository we added a Telegram bot wich will return the validation of FizzBuzz, this are the response of the bot depending on the message you send:
+1 - Your number is 1. Validation: 1
+3 - Your number is 3. Validation: FIZZ
+5 - Your number is 5. Validation: BUZZ
+15 - Your number is 15. Validation: FIZZBUZZ
+Node - List of explorers in Node
+Java - List of explorers in Java
+Other String - Send a valid number or mission
 
-The new functionality, given a score, will return Fizz, Buzz, FizzBuzz or the score.
+You can find the project without the bot here [Link to repo](https://github.com/julietadelgado/fizzbuzz_new_feature)
 
-The flow of the new functionality is as follows:
+To add the bot follow the next steps:
 
-```mermaid
-graph TD;
-    FizzbuzzService-->ExplorerController;
-    ExplorerController-->Server
-```
+1. Download and create a telegram account
+2. Go to Bot Father link: https://telegram.me/BotFather
+3. Name your bot
+4. Save the token that the app will give you
+5. Open the URL that the app will give you
+6. Press Start
+7. Install the Telegram bot dependency (`npm install node-telegram-bot-api --save`)
+8. Install dotenv dependency and add your token to .env file (`npm install dotenv --save`). DO NOT VERSION .env FILE
+9. Install ESLint (`npm install eslint --save-dev`)
+10. Add bot code on `lib/bot.js`
 
-To achieve this we create the next static method in `FuzzbuzzService`
+```javascript
+require("dotenv").config();
 
-```
-static applyValidationInNumber(number){
-    if(isNaN(number))
-        return "Error: The value is not a number";
-
-    if(number % 3 == 0 && number % 5 == 0)
-        return "FIZZBUZZ";
-    else if(number % 3 == 0)
-        return "FIZZ";
-    else if(number % 5 == 0)
-        return "BUZZ";
-    else
-        return number;
+if(!process.env.TOKEN){
+    throw new Error("No hay configuración con Api Token");
 }
-```
 
-Then in our `ExplorerController` we add the call to the previous static method
+const TelegramBot = require("node-telegram-bot-api");
+const ExplorerController = require("./controllers/ExplorerController");
 
-```
-class ExplorerController {
-    static getValidationFizzBuzzInNumber(number){
-        return FizzbuzzService.applyValidationInNumber(number);
-    }
-}
-```
+// replace the value below with the Telegram token you receive from @BotFather
+const token = process.env.TOKEN;
 
-Lastly, we add to our server a new endpoint for this functionality.
+// Create a bot that uses 'polling' to fetch new updates
+const bot = new TelegramBot(token, {polling: true});
 
-```
-app.get("/v1/fizzbuzz/:score",(request, response) => {
-    const score = request.params.score;
-    const trick = ExplorerController.getValidationFizzBuzzInNumber(score);
-    response.json({score: request.params.score, trick: trick});
+// Matches "/echo [whatever]"
+bot.onText(/\/echo (.+)/, (msg, match) => {
+    // 'msg' is the received Message from Telegram
+    // 'match' is the result of executing the regexp above on the text content
+    // of the message
+
+    const chatId = msg.chat.id;
+    const resp = match[1]; // the captured "whatever"
+
+    // send back the matched "whatever" to the chat
+    bot.sendMessage(chatId, resp);
+});
+
+// Listen for any kind of message. There are different kinds of
+// messages.
+bot.on("message", (msg) => {
+    const chatId = msg.chat.id;
+    const message = msg.text;
+    const responseBot = ExplorerController.getTelegramResponse(message);
+    bot.sendMessage(chatId, responseBot);
+
 });
 ```
 
-These are the expected values:
-| Endpoint | Request | Response |
-|---|---|---|
-| `localhost:3000/v1/fizzbuzz/:score` | `localhost:3000/v1/fizzbuzz/one` | `{score: 1, trick: "Error: The value is not a number"}` |
-| `localhost:3000/v1/fizzbuzz/:score` | `localhost:3000/v1/fizzbuzz/1` | `{score: 1, trick: 1}` |
-| `localhost:3000/v1/fizzbuzz/:score` | `localhost:3000/v1/fizzbuzz/3` | `{score: 3, trick: "Fizzz"}` |
-| `localhost:3000/v1/fizzbuzz/:score` | `localhost:3000/v1/fizzbuzz/5` | `{score: 5, trick: "Buzz"}` |
-| `localhost:3000/v1/fizzbuzz/:score` | `localhost:3000/v1/fizzbuzz/15` | `{score: 15, trick: "Fizzbuzz"}` |
+11. The bot response needs to be a string, for that we create two static methods in `ExplorerController`, `getTelegramResponse` and `giveStringFormatExplorersByMission`
+
+`getTelegramResponse` will see the message received and if it is a number, calls the fizzbuzz validation (`ExplorerController.applyFizzbuzz`), if the message is a string then we get the Explorers by mission `ExplorerController.getExplorersByMission((message.toLowerCase())`, if the result is empty then we return an error message.
+
+```javascript
+static getTelegramResponse(message){
+        let responseBot = "hola";
+        
+        if(!isNaN(parseInt(message))){
+            const numberToApplyFb = parseInt(message);
+            const fizzbuzzTrick = ExplorerController.applyFizzbuzz(numberToApplyFb);
+            responseBot = `FizzBuzz \n\nTu número es: ${numberToApplyFb}. Validación: ${fizzbuzzTrick}`;
+        }
+        else {
+            const explorersByMission = ExplorerController.giveStringFormatExplorersByMission(ExplorerController.getExplorersByMission((message.toLowerCase())));
+            if (explorersByMission != "")
+                responseBot = "Validación por misión \n\nLos explorers en "+ message + " son: \n\n" + explorersByMission;
+            else
+                responseBot = "Envía un número o misión válido";
+        }
+        
+        
+        return responseBot;
+    }
+```
+
+`giveStringFormatExplorersByMission` will give string format at the response of the explorers by mission, for that we create the next function.
+```javascript
+	static giveStringFormatExplorersByMission(students){
+        let string = "";
+
+        students.forEach(student => string +=    "Name: "+ student.name + "\n");
+        return string;
+   	}
+```
+
+12. Before call the bot, we can add a test to validate our functions
+```javascript
+	test("5. Get Bot Response Fizzbuzz", () => {
+        const responseBot1 = ExplorerController.getTelegramResponse(1);
+        expect(responseBot1).toBe("FizzBuzz \n\nTu número es: 1. Validación: 1"); 
+        const responseBot3 = ExplorerController.getTelegramResponse(3);
+        expect(responseBot3).toBe("FizzBuzz \n\nTu número es: 3. Validación: FIZZ");
+        const responseBot5 = ExplorerController.getTelegramResponse(5);
+        expect(responseBot5).toBe("FizzBuzz \n\nTu número es: 5. Validación: BUZZ");
+        const responseBot15 = ExplorerController.getTelegramResponse(15);
+        expect(responseBot15).toBe("FizzBuzz \n\nTu número es: 15. Validación: FIZZBUZZ");
+        const responseBot_string = ExplorerController.getTelegramResponse("string");
+        expect(responseBot_string).toBe("Envía un número o misión válido");
+        const responseBot_node = ExplorerController.getTelegramResponse("node");
+        expect(responseBot_node).toContain("Los explorers en node");
+    });
+```
+
+13. If the test is correct, then we just need to run our bot (node lib/bot.js) and send message in Telegram and see the result
