@@ -3,12 +3,19 @@
 ### New feature Bot Telegram
 
 In this repository we added a Telegram bot wich will return the validation of FizzBuzz, this are the response of the bot depending on the message you send:
+
 1 - Your number is 1. Validation: 1
+
 3 - Your number is 3. Validation: FIZZ
+
 5 - Your number is 5. Validation: BUZZ
+
 15 - Your number is 15. Validation: FIZZBUZZ
+
 Node - List of explorers in Node
+
 Java - List of explorers in Java
+
 Other String - Send a valid number or mission
 
 You can find the project without the bot here [Link to repo](https://github.com/julietadelgado/fizzbuzz_new_feature)
